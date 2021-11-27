@@ -1,32 +1,33 @@
 module Main
-import Data.Fin
 
 data Vect : Type -> Nat -> Type where
   VNil : Vect a Z
   VCons : (x: a) -> (xs : Vect a n) -> Vect a (S n)
-
-append : Vect a m -> Vect a n -> Vect a (m + n)
-append VNil v = v
-append (VCons a w) v = VCons a (append w v)
-
-index : Fin n -> Vect a n -> a
-index FZ (VCons a v) = a
-index (FS n) (VCons a v) = index n v
 
 data Tree : Type -> Nat -> Type where
   Empty : Tree a Z
   Leaf  : a -> Tree a 1
   Node  : Tree a n -> Tree a m -> Tree a (m + n + 1)
 
--- existential vector (n is hidden)
-data SomeVect : Type -> Type where
-  FromV : {n : Nat} -> Vect a n -> SomeVect a
-
-data SomeTree : Type -> Type where
-  FromT : {n : Nat} -> Tree a n -> SomeTree a
-
+-- Synonym for Nat-dependent types
 Nt : Type
 Nt = Nat -> Type
+
+-- Existential types hiding dependence on Nat
+data Some : Nt -> Type where
+  Hide : {n : Nat} -> nt n -> Some nt
+
+SomeTree : Type -> Type
+SomeTree a = Some (Tree a)
+
+SomeVect : Type -> Type
+SomeVect a = Some (Vect a)
+
+-- Vector utility functions
+
+appendV : Vect a m -> Vect a n -> Vect a (m + n)
+appendV VNil v = v
+appendV (VCons a w) v = VCons a (appendV w v)
 
 splitV : (n : Nat) -> Vect a (n + m) -> (Vect a n, Vect a m)
 splitV Z v = (VNil, v)
@@ -37,9 +38,26 @@ mapV : (a -> b) -> Vect a n -> Vect b n
 mapV f VNil = VNil
 mapV f (VCons a v) = VCons (f a) (mapV f v)
 
-split : Vect a (n + m) -> (Vect a n -> Tree b k) -> (Vect a m, Tree b k)
-split {n} v f = let (v1, v2) = splitV n v
-                in (v2, f v1)
+-- The lens returns this existential type
+-- For instance:
+-- exists n. (k, Vect a n, Vect b n -> Tree k)
+-- is a pair: a vector of leaves and a leaf changer
+data SomePair : Nt -> Nt -> Nt -> Type where
+ HidePair : {n : Nat} -> (k : Nat) -> a n -> (b n -> t k) -> SomePair a b t
+
+------------------
+-- Polynomial Lens
+------------------
+
+PolyLens : Nt -> Nt -> Nt -> Nt -> Type
+PolyLens s t a b = {k : Nat} -> s k -> SomePair a b t
+
+--------------------
+-- Tree Lens
+-- focuses on leaves
+--------------------
+-- When traversing the tree, each branch produces
+-- a leaf changer. We have to compose them
 
 --Compose two functions that turn vector to tree
 compose : (Vect b n -> Tree b k) -> (Vect b m -> Tree b j) ->
@@ -48,39 +66,42 @@ compose {n} f1 f2 v =
   let (v1, v2) = splitV n v
   in Node (f1 v1) (f2 v2)
 
--- exists n. (k, Vect a n, Vect b n -> Tree k)
-data SomePair : Nt -> Nt -> Nt -> Type where
- FromPair : {n : Nat} -> (k : Nat) -> a n -> (b n -> t k) -> SomePair a b t
-
 -- Given source Tree a, return a pair
 --  (Vect a of leaves, function from Vect b of leaves to Tree b)
 replace : (b : Type) -> Tree a n -> SomePair (Vect a) (Vect b) (Tree b)
-replace b Empty = FromPair 0 VNil (\v => Empty)
-replace b (Leaf x) = FromPair 1 (VCons x VNil) (\(VCons y VNil) => Leaf y)
+replace b Empty = HidePair 0 VNil (\v => Empty)
+replace b (Leaf x) = HidePair 1 (VCons x VNil) (\(VCons y VNil) => Leaf y)
 replace b (Node t1 t2) =
-  let (FromPair k1 v1 f1) = replace b t1
-      (FromPair k2 v2 f2) = replace b t2
-      v3 = append v1 v2
+  let (HidePair k1 v1 f1) = replace b t1
+      (HidePair k2 v2 f2) = replace b t2
+      v3 = appendV v1 v2
       f3 = compose f1 f2
-  in FromPair (k2 + k1 + 1) v3 f3
+  in HidePair (k2 + k1 + 1) v3 f3
 
-PolyLens : Nt -> Nt -> Nt -> Nt -> Type
-PolyLens s t a b = {k : Nat} -> s k -> SomePair a b t
-
+-- Tree lens focuses on leaves of a tree
 treeLens : PolyLens (Tree a) (Tree b) (Vect a) (Vect b)
---treeLens Empty = FromPair 0 VNil (\b => Empty)
 treeLens {b} t = replace b t
 
+-- Use tree lens to extract a vector of leaves
 getLeaves : Tree a n -> SomeVect a
 getLeaves t =
-  let  FromPair k v vt = (the (PolyLens  (Tree a) (Tree a) (Vect a) (Vect a)) treeLens) t
-  in  FromV v
+  let  HidePair k v vt =
+    -- Help Idris with type annotation
+         (the (PolyLens  (Tree a) (Tree a) (Vect a) (Vect a)) treeLens) t
+  in   Hide v
 
+-- Use tree lens to modify leaves
+-- 1. extract the leaves
+-- 2. map function over vector of leaves
+-- 3. replace leaves with the new vector
 mapLeaves : (a -> b) -> Tree a n -> SomeTree b
 mapLeaves {a} {b} f t =
-  let  FromPair k v vt = (the (PolyLens  (Tree a) (Tree b) (Vect a) (Vect b)) treeLens) t
-  in  FromT (vt (mapV f v))
+  let  HidePair k v vt =
+    -- Help Idris with type annotation
+         (the (PolyLens  (Tree a) (Tree b) (Vect a) (Vect b)) treeLens) t
+  in  Hide (vt (mapV f v))
 
+-- Utility functions for testing
 
 Show a => Show (Vect a n) where
   show VNil = ""
@@ -98,16 +119,16 @@ v1 = VCons 'a' VNil
 v2 : Vect Char 2
 v2 = VCons 'b' (VCons 'c' VNil)
 v3 : Vect Char 3
-v3 = append v1 v2
+v3 = appendV v1 v2
 
 someV : SomeVect Char
-someV = FromV v2
+someV = Hide v2
 
 Show a => Show (SomeVect a) where
-  show (FromV v) = show v
+  show (Hide v) = show v
 
 Show a => Show (SomeTree a) where
-  show (FromT v) = show v
+  show (Hide v) = show v
 
 t1 : Tree Char 1
 t1 = Leaf 'z'
@@ -116,6 +137,10 @@ t3 = (Node t1 (Node (Leaf 'a') (Leaf 'b')))
 
 main : IO ()
 main = do
+  putStrLn "getLeaves"
   print (getLeaves t3)
+  putStrLn "\nmapLeaves"
   print (mapLeaves ord t3)
+  putStrLn "\nmapLeaves of an empty tree"
   print (mapLeaves ord Empty)
+  putStrLn ""
