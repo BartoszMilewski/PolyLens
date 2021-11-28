@@ -61,6 +61,20 @@ data SomePair : Nt -> Nt -> Nt -> Type where
 PolyLens : Nt -> Nt -> Nt -> Nt -> Type
 PolyLens s t a b = {k : Nat} -> s k -> SomePair a b t
 
+transLens : PolyLens sn tn an bn -> ({n : Nat} -> an n -> bn n)
+        -> sn n -> Some tn
+transLens lens f t =
+  let  HidePair k v vt = lens t
+  in  Hide (vt (f v))
+
+getLens :  PolyLens sn tn an bn -> sn n -> Some an
+getLens lens t =
+  let  HidePair k v _ = lens t
+  in Hide v
+    -- Help Idris with type annotation
+--         (the (PolyLens  (Tree a) (Tree a) (Vect a) (Vect a)) treeLens) t
+
+
 --------------------
 -- Tree Lens
 -- focuses on leaves
@@ -91,14 +105,19 @@ replace b (Node t1 t2) =
 treeLens : PolyLens (Tree a) (Tree b) (Vect a) (Vect b)
 treeLens {b} t = replace b t
 
+treeSimpleLens : PolyLens (Tree a) (Tree a) (Vect a) (Vect a)
+treeSimpleLens {a} t = replace a t
+
 -- Use tree lens to extract a vector of leaves
 getLeaves : Tree a n -> SomeVect a
-getLeaves t =
+getLeaves t = getLens treeSimpleLens t
+
+{-
   let  HidePair k v vt =
     -- Help Idris with type annotation
          (the (PolyLens  (Tree a) (Tree a) (Vect a) (Vect a)) treeLens) t
   in   Hide v
-
+-}
 -- Use tree lens to modify leaves
 -- 1. extract the leaves
 -- 2. map function over vector of leaves
@@ -110,15 +129,8 @@ mapLeaves {a} {b} f t =
          (the (PolyLens  (Tree a) (Tree b) (Vect a) (Vect b)) treeLens) t
   in  Hide (vt (mapV f v))
 
-Trans : Nt -> Type -> Type
-Trans v a = v Z -> v Z
-
-transLeaves : ({n : Nat} -> Vect a n -> Vect b n) -> Tree a n -> SomeTree b
-transLeaves {a} {b} f t =
-  let  HidePair k v vt =
-    -- Help Idris with type annotation
-         (the (PolyLens  (Tree a) (Tree b) (Vect a) (Vect b)) treeLens) t
-  in  Hide (vt (f v))
+trLeaves : ({n : Nat} -> Vect a n -> Vect b n) -> Tree a n -> SomeTree b
+trLeaves f t = transLens treeLens f t
 
 
 -- Utility functions for testing
@@ -162,7 +174,7 @@ main = do
   putStrLn "\nmapLeaves"
   print (mapLeaves ord t3)
   putStrLn "\nsortLeaves"
-  print (transLeaves sortV t3)
+  print (trLeaves sortV t3)
   putStrLn "\nmapLeaves of an empty tree"
   print (mapLeaves ord Empty)
   putStrLn ""
