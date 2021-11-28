@@ -7,7 +7,7 @@ data Vect : Type -> Nat -> Type where
 data Tree : Type -> Nat -> Type where
   Empty : Tree a Z
   Leaf  : a -> Tree a 1
-  Node  : Tree a n -> Tree a m -> Tree a (m + n + 1)
+  Node  : Tree a n -> Tree a m -> Tree a (S (plus m  n))
 
 -- Synonym for Nat-dependent types
 Nt : Type
@@ -25,11 +25,11 @@ SomeVect a = Some (Vect a)
 
 -- Vector utility functions
 
-appendV : Vect a m -> Vect a n -> Vect a (m + n)
+appendV : Vect a m -> Vect a n -> Vect a (plus m n)
 appendV VNil v = v
 appendV (VCons a w) v = VCons a (appendV w v)
 
-splitV : (n : Nat) -> Vect a (n + m) -> (Vect a n, Vect a m)
+splitV : (n : Nat) -> Vect a (plus n m) -> (Vect a n, Vect a m)
 splitV Z v = (VNil, v)
 splitV (S k) (VCons a v') = let (v1, v2) = splitV k v'
                             in (VCons a v1, v2)
@@ -37,6 +37,15 @@ splitV (S k) (VCons a v') = let (v1, v2) = splitV k v'
 mapV : (a -> b) -> Vect a n -> Vect b n
 mapV f VNil = VNil
 mapV f (VCons a v) = VCons (f a) (mapV f v)
+
+ins : Ord a => (x : a) -> (xsrt : Vect a n) -> Vect a (S n)
+ins x VNil = VCons x VNil
+ins x (VCons y xs) = if x < y then VCons x (VCons y xs)
+                              else VCons y (ins x xs)
+
+sortV : Ord a => Vect a n -> Vect a n
+sortV VNil = VNil
+sortV (VCons x xs) = let xsrt = sortV xs in (ins x xsrt)
 
 -- The lens returns this existential type
 -- For instance:
@@ -61,7 +70,7 @@ PolyLens s t a b = {k : Nat} -> s k -> SomePair a b t
 
 --Compose two functions that turn vector to tree
 compose : (Vect b n -> Tree b k) -> (Vect b m -> Tree b j) ->
-       (Vect b (n + m) -> Tree b (j + k + 1))
+       (Vect b (plus n m)) -> Tree b (S (plus j k))
 compose {n} f1 f2 v =
   let (v1, v2) = splitV n v
   in Node (f1 v1) (f2 v2)
@@ -76,7 +85,7 @@ replace b (Node t1 t2) =
       (HidePair k2 v2 f2) = replace b t2
       v3 = appendV v1 v2
       f3 = compose f1 f2
-  in HidePair (k2 + k1 + 1) v3 f3
+  in HidePair (S (plus k2 k1)) v3 f3
 
 -- Tree lens focuses on leaves of a tree
 treeLens : PolyLens (Tree a) (Tree b) (Vect a) (Vect b)
@@ -100,6 +109,17 @@ mapLeaves {a} {b} f t =
     -- Help Idris with type annotation
          (the (PolyLens  (Tree a) (Tree b) (Vect a) (Vect b)) treeLens) t
   in  Hide (vt (mapV f v))
+
+Trans : Nt -> Type -> Type
+Trans v a = v Z -> v Z
+
+transLeaves : ({n : Nat} -> Vect a n -> Vect b n) -> Tree a n -> SomeTree b
+transLeaves {a} {b} f t =
+  let  HidePair k v vt =
+    -- Help Idris with type annotation
+         (the (PolyLens  (Tree a) (Tree b) (Vect a) (Vect b)) treeLens) t
+  in  Hide (vt (f v))
+
 
 -- Utility functions for testing
 
@@ -141,6 +161,8 @@ main = do
   print (getLeaves t3)
   putStrLn "\nmapLeaves"
   print (mapLeaves ord t3)
+  putStrLn "\nsortLeaves"
+  print (transLeaves sortV t3)
   putStrLn "\nmapLeaves of an empty tree"
   print (mapLeaves ord Empty)
   putStrLn ""
