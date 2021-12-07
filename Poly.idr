@@ -6,7 +6,7 @@ data Vect : Type -> Nat -> Type where
 
 data Tree : Type -> Nat -> Type where
   Empty : Tree a Z
-  Leaf  : a -> Tree a 1
+  Leaf  : a -> Tree a (S Z)
   Node  : Tree a n -> Tree a m -> Tree a (S (plus m  n))
 
 -- Synonym for Nat-dependent types
@@ -17,13 +17,17 @@ Nt = Nat -> Type
 data Some : Nt -> Type where
   Hide : {n : Nat} -> nt n -> Some nt
 
-SomeTree : Type -> Type
-SomeTree a = Some (Tree a)
-
 SomeVect : Type -> Type
 SomeVect a = Some (Vect a)
 
+SomeTree : Type -> Type
+SomeTree a = Some (Tree a)
+
 -- Vector utility functions
+
+mapV : (a -> b) -> Vect a n -> Vect b n
+mapV f VNil = VNil
+mapV f (VCons a v) = VCons (f a) (mapV f v)
 
 appendV : Vect a m -> Vect a n -> Vect a (plus m n)
 appendV VNil v = v
@@ -34,18 +38,14 @@ splitV Z v = (VNil, v)
 splitV (S k) (VCons a v') = let (v1, v2) = splitV k v'
                             in (VCons a v1, v2)
 
-mapV : (a -> b) -> Vect a n -> Vect b n
-mapV f VNil = VNil
-mapV f (VCons a v) = VCons (f a) (mapV f v)
-
-ins : Ord a => (x : a) -> (xsrt : Vect a n) -> Vect a (S n)
-ins x VNil = VCons x VNil
-ins x (VCons y xs) = if x < y then VCons x (VCons y xs)
-                              else VCons y (ins x xs)
-
 sortV : Ord a => Vect a n -> Vect a n
 sortV VNil = VNil
 sortV (VCons x xs) = let xsrt = sortV xs in (ins x xsrt)
+  where
+    ins : Ord a => (x : a) -> (xsrt : Vect a n) -> Vect a (S n)
+    ins x VNil = VCons x VNil
+    ins x (VCons y xs) = if x < y then VCons x (VCons y xs)
+                                  else VCons y (ins x xs)
 
 -- The lens returns this existential type
 -- For instance:
@@ -71,9 +71,6 @@ getLens :  PolyLens sn tn an bn -> sn n -> Some an
 getLens lens t =
   let  HidePair k v _ = lens t
   in Hide v
-    -- Help Idris with type annotation
---         (the (PolyLens  (Tree a) (Tree a) (Vect a) (Vect a)) treeLens) t
-
 
 --------------------
 -- Tree Lens
