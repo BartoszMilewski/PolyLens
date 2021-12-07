@@ -1,2 +1,9 @@
 
 *.ibc
+*.log
+.DS_Store
+.DS_Store
+*.aux
+*.out
+*.gz
+.DS_Store
