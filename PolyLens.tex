@@ -39,10 +39,12 @@ or, by representing all sets $s_n$ as sums of singlentons:
 I will also use the notation $[t_n, y]$ for the internal hom:
 \[ P(y) = \sum_{n \in N} s_n \times [t_n, y] \]
   
-Polynomial functors form a category $\mathbf{Poly}$ in which morphisms are natural transformations. Consider two polynomial functors $P$ and $Q$. A natural transformation between them can be written as an end. Let's first expand the source functor:
-\[   \mathbf{Poly}\left( \sum_n s_n \times [t_n, -], Q\right)  =  \int_{y\colon \mathbf{Set}} \mathbf{Set} \left(\sum_n s_n \times [t_n, y], Q(y)\right)\]
+Polynomial functors form a category $\mathbf{Poly}$ in which morphisms are natural transformations. 
+
+Consider two polynomial functors $P$ and $Q$. A natural transformation between them can be written as an end. Let's first expand the source functor:
+\[   \mathbf{Poly}\left( \sum_k s_k \times [t_k, -], Q\right)  =  \int_{y\colon \mathbf{Set}} \mathbf{Set} \left(\sum_k s_k \times [t_k, y], Q(y)\right)\]
 The mapping out of a sum is isomorphic to a product of mappings:
-\[ \cong \prod_n \int_y \mathbf{Set} \left(s_n \times [t_n, y], Q(y)\right) \]
+\[ \cong \prod_k \int_y \mathbf{Set} \left(s_k \times [t_k, y], Q(y)\right) \]
 
 We can see that a natural transformation between polynomials can be reduced to a product of natural transformations out of monomials. So let's consider a mapping out of a monomial:
 \[ \int_y \mathbf{Set} \left( s \times [t, y], \sum_n a_n \times [b_n, y]\right) \]
@@ -50,16 +52,16 @@ We can see that a natural transformation between polynomials can be reduced to a
  We can use the currying adjunction:
 \[ \int_y \mathbf{Set} \left( 
     [t, y],  \left[s, \sum_n a_n \times [b_n, y]\right]  \right) \]
- Or, in $\mathbf{Set}$:
+ or, in $\mathbf{Set}$:
  \[ \int_y \mathbf{Set} \left( 
     \mathbf{Set}(t, y), \mathbf{Set} \left(s, \sum_n a_n \times [b_n, y]\right)  \right) \]
 
  We can now use the Yoneda lemma to eliminate the end. This will simply replace $y$ with $t$ in the target of the natural transformation:
  \[ \mathbf{Set}\left(s, \sum_n a_n \times [b_n, t] \right) \]
  
-The set of natural transformation between two arbitrary polynomials $\sum_k s_k \times [t_k, y]$ and $\sum_n a_n \times [b_n, y]$ is called a polynomial lens:
+The set of natural transformation between two arbitrary polynomials $\sum_k s_k \times [t_k, y]$ and $\sum_n a_n \times [b_n, y]$ is called a polynomial lens. Combining the previous results, we see that it can be written as:
  \[ \mathbf{PolyLens}\langle s, t\rangle \langle a, b\rangle = \prod_{k \in K} \mathbf{Set}\left(s_k, \sum_{n \in N} a_n \times [b_n, t_k] \right) \]
-Notice that, in general, the sets $K$ and $N$ may be different. 
+Notice that, in general, the sets $K$ and $N$ are different. 
 
 Using dependent-type language, we can describe the polynomial lens as acting on a whole family of types at once. For a given value of type $s_k$ it determines the index $n$. The interesting part is that this index and, consequently, the type of the focus $a_n$ and the type on the new focus $b_n$ depends not only on the type but also on the \emph{value} of the argument $s_k$. 
 
@@ -88,22 +90,19 @@ and use the currying adjunction to get:
 The main observation is that, if we treat the sets $N$ and $K$ as a discrete categories $\mathcal{N}$ and $\mathcal{K}$, a product of mappings can be considered a natural transformation between functors. Functors from a discrete category are just mappings of objects, and naturality conditions are trivial. 
 
 
-A double product could be considered a natural transformation from a product category. And since a discrete category is its own opposite, we can (anticipating the general profunctor case) rewrite our mappings as natural transformations:
+A double product can be considered a natural transformation from a product category. And since a discrete category is its own opposite, we can (anticipating the general profunctor case) rewrite our mappings as natural transformations:
 \[ \prod_{i \in K} \prod_{m \in N} \mathbf{Set} \left(c_{m i}, [b_m, t_i] \right) \cong 
 [\mathcal{N}^{op} \times \mathcal{K}, \mathbf{Set}]\left(c_{= -}, [b_=, t_- ]\right)\]
 The indexes were replaced by placeholders. This notation underscores the interpretation of $b$ as a functor (co-presheaf) from $\mathcal{N}$ to $\mathbf{Set}$,  $t$ as a functor from $\mathcal{K}$ to $\mathbf{Set}$, and $c$ as a profunctor on $\mathcal{N}^{op} \times \mathcal{K}$.
 
  
- We can therefore use the co-Yoneda lemma to eliminate the coend over $c_{ki}$. The result is:
- \begin{align*}
- &\mathbf{Pl}\langle s, t\rangle \langle a, b\rangle
- \\
-\cong & \int^{c_{k i}} 
+ We can therefore use the co-Yoneda lemma to eliminate the coend over $c_{ki}$. The result is that $\mathbf{Pl}\langle s, t\rangle \langle a, b\rangle$ can be wrtitten as:
+ \[ \int^{c_{k i}} 
  \prod_{k \in K} \mathbf{Set} \left(s_k,  \sum_{n \in N} a_n \times c_{n k} \right) \times 
- [\mathcal{N}^{op} \times \mathcal{K}, \mathbf{Set}]\left(c_{= -}, [b_=, t_- ]\right) 
-\\
-\cong & \prod_{k \in K} \mathbf{Set}\left(s_k, \sum_{n \in N} a_n \times [b_n, t_k] \right)
- \end{align*}
+ [\mathcal{N}^{op} \times \mathcal{K}, \mathbf{Set}]\left(c_{= -}, [b_=, t_- ]\right) \]
+\[
+\cong  \prod_{k \in K} \mathbf{Set}\left(s_k, \sum_{n \in N} a_n \times [b_n, t_k] \right)
+ \]
 which is exactly the original polynomial-to-polynomial transformation.
 
 \section{Acknowledgments}
