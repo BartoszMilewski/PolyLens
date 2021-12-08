@@ -61,16 +61,16 @@ data SomePair : Nt -> Nt -> Nt -> Type where
 PolyLens : Nt -> Nt -> Nt -> Nt -> Type
 PolyLens s t a b = {k : Nat} -> s k -> SomePair a b t
 
+getLens :  PolyLens sn tn an bn -> sn n -> Some an
+getLens lens t =
+  let  HidePair k v _ = lens t
+  in Hide v
+
 transLens : PolyLens sn tn an bn -> ({n : Nat} -> an n -> bn n)
         -> sn n -> Some tn
 transLens lens f t =
   let  HidePair k v vt = lens t
   in  Hide (vt (f v))
-
-getLens :  PolyLens sn tn an bn -> sn n -> Some an
-getLens lens t =
-  let  HidePair k v _ = lens t
-  in Hide v
 
 --------------------
 -- Tree Lens
