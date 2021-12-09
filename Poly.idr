@@ -29,9 +29,9 @@ mapV : (a -> b) -> Vect a n -> Vect b n
 mapV f VNil = VNil
 mapV f (VCons a v) = VCons (f a) (mapV f v)
 
-appendV : Vect a m -> Vect a n -> Vect a (plus m n)
-appendV VNil v = v
-appendV (VCons a w) v = VCons a (appendV w v)
+concatV : Vect a m -> Vect a n -> Vect a (plus m n)
+concatV VNil v = v
+concatV (VCons a w) v = VCons a (concatV w v)
 
 splitV : (n : Nat) -> Vect a (plus n m) -> (Vect a n, Vect a m)
 splitV Z v = (VNil, v)
@@ -94,7 +94,7 @@ replace b (Leaf x) = HidePair 1 (VCons x VNil) (\(VCons y VNil) => Leaf y)
 replace b (Node t1 t2) =
   let (HidePair k1 v1 f1) = replace b t1
       (HidePair k2 v2 f2) = replace b t2
-      v3 = appendV v1 v2
+      v3 = concatV v1 v2
       f3 = compose f1 f2
   in HidePair (S (plus k2 k1)) v3 f3
 
@@ -148,7 +148,7 @@ v1 = VCons 'a' VNil
 v2 : Vect Char 2
 v2 = VCons 'b' (VCons 'c' VNil)
 v3 : Vect Char 3
-v3 = appendV v1 v2
+v3 = concatV v1 v2
 
 someV : SomeVect Char
 someV = Hide v2
@@ -159,10 +159,8 @@ Show a => Show (SomeVect a) where
 Show a => Show (SomeTree a) where
   show (Hide v) = show v
 
-t1 : Tree Char 1
-t1 = Leaf 'z'
 t3 : Tree Char 5
-t3 = (Node t1 (Node (Leaf 'a') (Leaf 'b')))
+t3 = (Node (Leaf 'z') (Node (Leaf 'a') (Leaf 'b')))
 
 main : IO ()
 main = do
