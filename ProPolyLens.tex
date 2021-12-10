@@ -1,0 +1,90 @@
+\documentclass[11pt]{amsart}          
+\usepackage{amsfonts}
+\usepackage{amssymb}  
+\usepackage{amsthm} 
+\usepackage{amsmath} 
+\usepackage{tikz-cd}
+\usepackage{float}
+\usepackage[]{hyperref}
+\usepackage{minted}
+\hypersetup{
+  colorlinks,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue}
+\newcommand{\hask}[1]{\mintinline{Haskell}{#1}}
+\newenvironment{haskell}
+  {\VerbatimEnvironment
+  	\begin{minted}[escapeinside=??, mathescape=true,frame=single, framesep=5pt, tabsize=1]{Haskell}}
+  {\end{minted}}
+
+\author{Bartosz Milewski}
+\title{Profunctor Represenatation of a Polynomial Lens}
+\begin{document}
+\maketitle{}
+
+\section{Motivation}
+
+In this post I'll be looking at a subcategory of $\mathbf{Poly}$ that consists of polynomial functors in which the fibration is done over one fixed set $N$:
+\[ P(y) = \sum_{n \in N} s_n \times \mathbf{Set}(t_n, y) \]
+
+The reason for this restriction is that morphisms between such functors, which are called polynomial lenses, can be understood in terms of monoidal actions. Optics that have this property automatically have profunctor representation. Profunctor representation has the advantage that it lets us compose optics using regular function composition. 
+
+\href{https://bartoszmilewski.com/2021/12/07/polylens/}{Previously} I've explored the representations of polynomial lenses as optics in terms on functors and profunctors on discrete categories. With just a few modifications, we can make these categories non-discrete. The trick is to replace sums with coends and products with ends; and, when appropriate, interpret ends as natural transformations. 
+
+\section{Monoidal Action}
+
+Here's the existential representation of a lens between polynomials in which all fibrations are over the same set $N$:
+
+\[ \mathbf{Pl}\langle s, t\rangle \langle a, b\rangle \cong \int^{c_{k i}} 
+ \prod_{k \in N} \mathbf{Set} \left(s_k,  \sum_{n \in N} a_n \times c_{n k} \right) \times 
+ \prod_{i \in N}  \mathbf{Set} \left(\sum_{m \in N} b_m \times c_{m i}, t_i \right) \]
+This makes the matrices $c_{n k}$ ``square.'' Such matrices can be multiplied using a version of matrix multiplication. 
+
+Interestingly, this idea generalizes naturally to a setting in which $N$ is replaced by a non-discrete category $\mathcal{N}$. In this setting, we'll write the residues $c_{m n}$ as profunctors:
+\[ c \langle m, n \rangle \colon \mathcal{N}^{op} \times \mathcal{N} \to \mathbf{Set} \]
+They are objects in the \emph{monoidal category} in which the tensor product is given by profunctor composition:
+\[ (c \diamond c') \langle m, n \rangle = \int^{k \colon \mathcal{N}} c \langle m, k \rangle \times c' \langle k, n \rangle \]
+and the unit is the hom-functor $\mathcal{N}(m, n)$. (Incidentally, a monoid in this category is called a \emph{promonad}.)
+
+In the case of $\mathcal{N}$ a discrete category, these definitions decay to standard matrix multiplication: 
+\[ \sum_k c_{m k} \times c'_{k n} \]
+and the Kronecker delta $\delta_{m n}$.
+
+We define the monoidal action of the profunctor $c$ acting on a co-presheaf $a$ as:
+\[(c \bullet a) (m) = \int^{n \colon \mathcal{N}} a(n) \times c \langle n, m \rangle \]
+This is reminiscent of a vector being multiplied by a matrix. Such an action of a monoidal category equips the co-presheaf category with the structure of an \emph{actegory}. 
+
+A product of hom-sets in the definition of the existential optic turns into a set of natural transformations in the functor category $ [\mathcal{N}, \mathbf{Set}] $. 
+
+\[ \mathbf{Pl}\langle s, t\rangle \langle a, b\rangle \cong \int^{c \colon [\mathcal{N}^{op} \times \mathcal{N}, Set]}   [\mathcal{N}, \mathbf{Set}]  \left(s, c \bullet a\right)  \times  [\mathcal{N}, \mathbf{Set}]  \left(c \bullet b, t\right) \]
+Or, using the end notation for natural transformations:
+\[ \int^{c} \left( \int_m \mathbf{Set}\left(s(m), (c \bullet a)(m)\right)  \times  \int_n \mathbf{Set} \left((c \bullet b)(n), t(n)\right) \right)\]
+
+As before, we can eliminate the coend if we can isolate $c$ in the second hom-set using a series of isomorphisms:
+\begin{align*}
+ & \int_n  \mathbf{Set} \left(\int^k b(k) \times c\langle k, n \rangle , t(n) \right)
+ \\
+\cong & \int_n \int_k \mathbf{Set}\left( b(k) \times c\langle k, n \rangle , t (n)\right)
+ \\
+\cong &  \int_{n, k} \mathbf{Set}\left(c\langle k, n \rangle , [b(k), t (n)]\right)
+ \end{align*}
+I used the fact that a mapping out of a coend is an end. The result, after applying the Yoneda lemma to eliminate the end over $k$, is:
+\[ \mathbf{Pl}\langle s, t\rangle \langle a, b\rangle \cong  
+\int_m \mathbf{Set}\left(s(m), \int^j a(j) \times [b(j), t(m)] \right) \]
+or, with some abuse of notation:
+\[  [\mathcal{N}, \mathbf{Set}] ( s, [b, t] \bullet a)\]
+When $\mathcal{N}$ is discrete, this formula decays to the one for polynomial lens. 
+
+\section{Profunctor Representation}
+
+Since this poly-lens is a special case of a general optic, it automatically has a \href{https://arxiv.org/abs/2001.07488}{profunctor representation}. The trick is to define a generalized Tambara module, that is a category $\mathcal{T}$ of profunctors of the type:
+\[ P \colon [\mathcal{N}, \mathbf{Set}]^{op}  \times [\mathcal{N}, \mathbf{Set}] \to \mathbf{Set} \]
+with additional structure given by the following family of transformations, in components:
+\[\alpha_{c, s, t} \colon P\langle s, t \rangle \to P \left \langle c \bullet s, c \bullet t \right \rangle \]
+
+The profunctor representation of the polynomial lens is then given by an end over all profunctors in this Tambara category:
+
+\[  \mathbf{Pl}\langle s, t\rangle \langle a, b\rangle \cong \int_{P \colon \mathcal{T}} \mathbf{Set}\left ( (U P)\langle a, b \rangle, (U P) \langle s, t \rangle \right) \]
+Where $U$ is the obvious forgetful functor from $\mathcal{T}$ to the underlying profunctor category.
+\end{document}
