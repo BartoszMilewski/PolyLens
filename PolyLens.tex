@@ -67,6 +67,17 @@ Using dependent-type language, we can describe the polynomial lens as acting on 
 
 Here's a simple example: consider a family of node-counted trees. In this case $s_k$ is a type of a tree with $k$ nodes. For a given node count we can still have trees with a different number of leaves. We can define a poly-lens for such trees that focuses on the leaves. For a given tree it produces a counted vector $a_n$ of leaves and a function that takes a counted vector $b_n$  (same size, but different type of leaf) and returns a new tree $t_k$. 
 
+\section{Lenses and Kan Extensions}
+After publishing an Idris implementation of the polynomial lens, Iceland Jack made an interesting observation on Twitter: The sum type in the definition of the lens looks like a left Kan extension. Indeed, if we treat $a$ and $b$ as co-presheaves, the left Kan extension of $a$ along $b$ is given by the coend:
+\[ Lan_b a \cong \int^{n \colon \mathcal{N}} a \times [b, -] \]
+A coend over a discrete category is a sum (coproduct), since the co-wedge condition is trivially satisfied. 
+
+Similarly, an end over a discrete category $\mathcal{K}$ becomes a product. An end of hom-sets becomes a natural transformation. A polynomial lens can therefore be rewritten as:
+\[ \prod_{k \in K} \mathbf{Set}\left(s_k, \sum_{n \in N} a_n \times [b_n, t_k] \right)  \cong [\mathcal{K}, \mathbf{Set}](s, (Lan_b a) \circ t) \]
+Finally, since the left Kan extension is the left adjoint of functor pre-composition, we get this very compact formula:
+\[  \mathbf{PolyLens}\langle s, t\rangle \langle a, b\rangle \cong [\mathbf{Set}, \mathbf{Set}](Lan_t s, Lan_b a) \]
+which works for arbitrary categories $\mathcal{N}$ and $\mathcal{K}$ for which the relevant Kan extensions exist.
+
 \section{Existential Representation}
 
 
