@@ -1,0 +1,116 @@
+\documentclass[11pt]{amsart}          
+\usepackage{amsfonts}
+\usepackage{amssymb}  
+\usepackage{amsthm} 
+\usepackage{amsmath} 
+\usepackage{tikz-cd}
+\usepackage{float}
+\usepackage[]{hyperref}
+\usepackage{minted}
+\hypersetup{
+  colorlinks,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue}
+\newcommand{\hask}[1]{\mintinline{Haskell}{#1}}
+\newenvironment{haskell}
+  {\VerbatimEnvironment
+  	\begin{minted}[escapeinside=??, mathescape=true,frame=single, framesep=5pt, tabsize=1]{Haskell}}
+  {\end{minted}}
+\newcommand{\cat}[1]{\mathcal{#1}}%a generic category
+\newcommand{\Cat}[1]{\mathbf{#1}}%a named category
+
+\author{Bartosz Milewski}
+\title{A Category of Generalized Tambara Modules}
+\begin{document}
+\maketitle{}
+
+We start with a monoidal category $\cat M$ and its action in a pair of categories $\cat C$ and $ \cat D$ (we use the same infix symbol for both):
+\begin{align*} 
+\bullet &\colon \cat M \times \cat C \to \cat C 
+\\
+ \bullet &\colon \cat M \times \cat D \to \cat D 
+\end{align*}
+A Tambara module is a profunctor $p \colon \cat C^{op} \times \cat D \to \Cat{Set}$ equipped with a family of transformations:
+\[ \alpha_{m, \langle a, b \rangle} \colon p \langle a, b \rangle \to p \langle m \bullet a, m \bullet b \rangle \]
+natural in $m$ and dinatural in $\langle a, b \rangle$, satisfying the unit and associativity conditions. 
+
+Tambara modules form a category.  A morphism between Tambara modules $(p, \alpha)$ and $(q, \alpha')$ is a natural transformation:
+
+\[ \rho_{\langle a, b \rangle} \colon p \langle a, b \rangle \to q \langle a, b \rangle \]
+ satisfying the coherence conditions:
+\[
+ \begin{tikzcd}
+ p \langle a, b \rangle
+ \arrow[r, "{\alpha_{m, \langle a, b \rangle}}"]
+ \arrow[dd, "{\rho_{ \langle a, b \rangle}}"']
+& p \langle m \bullet a, m \bullet b \rangle
+ \arrow[dd, "{\rho_{\langle m \bullet a, m \bullet b \rangle}}"]
+ \\
+  \\
+ q \langle a, b \rangle
+ \arrow[r, "{\alpha'_{m, \langle a, b \rangle}}"]
+& q \langle m \bullet a, m \bullet b \rangle
+ \end{tikzcd}
+\]
+In what follows I'll consider, for the sake of simplicity, Tambara endo-modules of the type  $p \colon \cat C^{op} \times \cat C \to \Cat{Set}$
+
+\section{Generalized Tambara Category}
+
+We start with two monoidal categories $\cat M$ and $\cat N$ with two separate actions on two categories:
+\begin{align*} 
+\bullet &\colon \cat M \times \cat C \to \cat C 
+\\
+ \bullet &\colon \cat N \times \cat D \to \cat D 
+\end{align*}
+
+We have a Tambara module $p$ in $\cat C^{op} \times \cat C$ with the structure:
+\[ \alpha_{m, \langle a, b \rangle} \colon p \langle a, b \rangle \to p \langle m \bullet a, m \bullet b \rangle \]
+and another one $q$ in $\cat D^{op} \times \cat D$  with the structure:
+\[ \beta_{n, \langle s, t \rangle} \colon q \langle s, t \rangle \to q \langle n \bullet s, n \bullet t \rangle \]
+
+A morphism between Tambara modules is a functor $c \colon \cat C \to \cat D$ and a family of functions:
+\[ \rho_{c, \langle a, b \rangle} \colon p \langle a, b \rangle \to q \langle c \bullet a, c \bullet b \rangle \]
+satisfying the following coherence conditions:
+\[
+ \begin{tikzcd}
+ p \langle a, b \rangle
+ \arrow[r, "{\alpha_{m, \langle a, b \rangle}}"]
+ \arrow[dd, "{\rho_{c \cdot m, \langle a, b \rangle}}"']
+& p \langle m \bullet a, m \bullet b \rangle
+ \arrow[dd, "{\rho_{c, \langle m \bullet a, m \bullet b \rangle}}"]
+ \\
+  \\
+ q \langle (c \cdot m)  \bullet a, (c \cdot m) \bullet b \rangle
+ \arrow[r, ""]
+& q \langle c \bullet (m \bullet a), c \bullet (m \bullet b) \rangle
+ \end{tikzcd}
+\]
+
+\[
+ \begin{tikzcd}
+ p \langle a, b \rangle
+ \arrow[r, "{\rho_{c, \langle a, b \rangle}}"]
+ \arrow[dd, "{\rho_{n \cdot c, \langle a, b \rangle}}"']
+& q \langle c \bullet a, c \bullet b \rangle
+ \arrow[dd, "{\beta_{n, \langle c \bullet a, c \bullet b \rangle}}"]
+ \\
+  \\
+ q \langle (n \cdot c)  \bullet a, (n \cdot c) \bullet b \rangle
+ \arrow[r, ""]
+& q \langle n \bullet (c \bullet a), n \bullet (c \bullet b) \rangle
+ \end{tikzcd}
+\]
+
+\section{References}
+
+\begin{itemize}
+\item D. Tambara, \emph{Distributors on a tensor category}. Hokkaido Math. J. 35(2): 379-425 (May 2006)
+
+\item Craig Pastro and Ross Street. \emph{Doubles for monoidal categories}. Theory and
+applications of categories, 21(4):61–75, 200
+\end{itemize}
+
+
+
+\end{document}
