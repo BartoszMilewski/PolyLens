@@ -63,6 +63,46 @@ We start with two monoidal categories $\cat M$ and $\cat N$ with two separate ac
 \\
  \bullet &\colon \cat N \times \cat D \to \cat D 
 \end{align*}
+The two monoidal actions can also be seen, after currying, as strict monoidal functors:
+\begin{align*}
+&\cat M \to [\cat C, \cat C]
+\\
+&\cat N \to [\cat D, \cat D]
+\end{align*}
+
+Next we define a category of monoidal functors $\cat M \to \cat N$. Given a functor $c$, we'll write its action on $m \colon \cat M$ as $c \cdot m$. This produces an object of $\cat N$. This action satisfies the usual associativity and unit conditions of a monoidal functor. 
+
+We lift this action to a functor from $\cat C$ to  $\cat D$, or the action:
+\[ \bullet \colon \cat M \times \cat C \to \cat D \]
+satisfying the coherence conditions:
+\[
+ \begin{tikzcd}
+ a
+ \arrow [r, "m \bullet"] 
+ \arrow [d, "(c \cdot m) \bullet"']
+ & m \bullet a
+ \arrow [d, "c \bullet"]
+ \\
+ (c \cdot m) \bullet a
+ \arrow [r, "\cong"]
+ & c \bullet (m \bullet a)
+ \end{tikzcd}
+\]
+
+\[
+ \begin{tikzcd}
+ a
+ \arrow [r, "c \bullet"] 
+ \arrow [d, "(n \cdot c) \bullet"']
+ & c \bullet a
+ \arrow [d, "n \bullet"]
+ \\
+ (n \cdot c) \bullet a
+ \arrow [r, "\cong"]
+ & n \bullet (c \bullet a)
+ \end{tikzcd}
+\]
+
 
 We have a Tambara module $p$ in $\cat C^{op} \times \cat C$ with the structure:
 \[ \alpha_{m, \langle a, b \rangle} \colon p \langle a, b \rangle \to p \langle m \bullet a, m \bullet b \rangle \]
