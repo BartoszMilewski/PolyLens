@@ -29,7 +29,7 @@
 
 \section{Tambara Category}
 
-We start with a monoidal category $\cat M$ and its action in a pair of categories $\cat C$ and $ \cat D$ (we use the same infix symbol for both):
+We start with a monoidal category $\cat M$ and its action in a pair of categories $\cat C$ and $ \cat D$. I will use the same symbol $\bullet$ for all actions---it should be possible to tell which one is meant from the context:
 \begin{align*} 
 \bullet &\colon \cat M \times \cat C \to \cat C 
 \\
@@ -74,7 +74,7 @@ The two monoidal actions can also be seen, after currying, as strict monoidal fu
 &\cat N \to [\cat D, \cat D]
 \end{align*}
 
-Next we define a category of monoidal functors $\cat M \to \cat N$. Given a functor $c$, we'll write its action on $m \colon \cat M$ as $c \cdot m$. This produces an object of $\cat N$. This action satisfies the usual associativity and unit conditions of a monoidal functor. 
+Next we consider a category of monoidal functors $\cat M \to \cat N$. Given a functor $c$, we'll write its action on $m \colon \cat M$ as $c \cdot m$. It is given in terms of composition of the underlying functors. This action produces an object of $\cat N$. It satisfies the usual associativity and unit conditions of a monoidal functor. 
 
 We lift this action to a functor from $\cat C$ to  $\cat D$, or the action:
 \[ \bullet \colon \cat M \times \cat C \to \cat D \]
@@ -107,13 +107,12 @@ satisfying the coherence conditions:
  \end{tikzcd}
 \]
 
-
-We have a Tambara module $p$ in $\cat C^{op} \times \cat C$ with the structure:
+Next we consider a Tambara module $p$ in $\cat C^{op} \times \cat C$ with the structure:
 \[ \alpha_{m, \langle a, b \rangle} \colon p \langle a, b \rangle \to p \langle m \bullet a, m \bullet b \rangle \]
 and another one $q$ in $\cat D^{op} \times \cat D$  with the structure:
 \[ \beta_{n, \langle s, t \rangle} \colon q \langle s, t \rangle \to q \langle n \bullet s, n \bullet t \rangle \]
 
-A morphism between Tambara modules is a functor $c \colon \cat C \to \cat D$ and a family of functions:
+A morphism between Tambara modules is a monoidal functor $c \colon \cat M \to \cat N$ with an action defined on $\cat C$, together with a family of functions:
 \[ \rho_{c, \langle a, b \rangle} \colon p \langle a, b \rangle \to q \langle c \bullet a, c \bullet b \rangle \]
 satisfying the following coherence conditions:
 \[
