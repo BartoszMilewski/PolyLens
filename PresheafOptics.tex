@@ -1,0 +1,121 @@
+\documentclass[11pt]{amsart}          
+\usepackage{amsfonts}
+\usepackage{amssymb}  
+\usepackage{amsthm} 
+\usepackage{amsmath} 
+\usepackage{tikz-cd}
+\usepackage{float}
+\usepackage[]{hyperref}
+\usepackage{minted}
+\hypersetup{
+  colorlinks,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue}
+\newcommand{\hask}[1]{\mintinline{Haskell}{#1}}
+\newenvironment{haskell}
+  {\VerbatimEnvironment
+  	\begin{minted}[escapeinside=??, mathescape=true,frame=single, framesep=5pt, tabsize=1]{Haskell}}
+  {\end{minted}}
+\newcommand{\cat}[1]{\mathcal{#1}}%a generic category
+\newcommand{\Cat}[1]{\mathbf{#1}}%a named category
+\newcommand{\Set}{\Cat{Set}}
+
+\author{Bartosz Milewski}
+\title{Presheaf Optics}
+\begin{document}
+\maketitle{}
+
+\section{Motivation}
+
+
+\section{Actegories}
+
+An actegory is a category $\cat C$ with a (coherent) action of a monoidal category $\cat M$. Actegories for a given $\cat M$ form a 2-category. Here, I'd like to define a larger category that combines actegories for different monoidal categories.
+
+We start with two monoidal categories $\cat M$ and $\cat N$ with two separate actions on two categories:
+\begin{align*} 
+\bullet &\colon \cat M \times \cat C \to \cat C 
+\\
+ \bullet &\colon \cat N \times \cat D \to \cat D 
+\end{align*}
+The two monoidal actions can also be seen, after currying, as strict monoidal functors:
+\begin{align*}
+&\cat M \to [\cat C, \cat C]
+\\
+&\cat N \to [\cat D, \cat D]
+\end{align*}
+
+Next we consider a category of monoidal functors $\cat M \to \cat N$. Given a functor $c$, we'll write its action on an object $m \colon \cat M$ as $c \cdot m$. It is given in terms of composition of the underlying functors. This action produces an object of $\cat N$. It satisfies the usual associativity and unit conditions of a monoidal functor. 
+
+We also demand that there be a left adjoint to this functor, defining the action of $c$ on $\cat N$:
+
+\[ \cat N (n, c \cdot m) \cong \cat M (c^{\dagger} n, m) \]
+
+We lift the action of $c$ to a functor from $\cat C$ to  $\cat D$, or the action:
+\[ \bullet \colon \cat M \times \cat C \to \cat D \]
+satisfying the coherence conditions:
+\[
+ \begin{tikzcd}
+ a
+ \arrow [r, "m \bullet"] 
+ \arrow [d, "(c \cdot m) \bullet"']
+ & m \bullet a
+ \arrow [d, "c \bullet"]
+ \\
+ (c \cdot m) \bullet a
+ \arrow [r, "\cong"]
+ & c \bullet (m \bullet a)
+ \end{tikzcd}
+\]
+
+\[
+ \begin{tikzcd}
+ a
+ \arrow [r, "c \bullet"] 
+ \arrow [d, "(n \cdot c) \bullet"']
+ & c \bullet a
+ \arrow [d, "n \bullet"]
+ \\
+ (n \cdot c) \bullet a
+ \arrow [r, "\cong"]
+ & n \bullet (c \bullet a)
+ \end{tikzcd}
+\]
+where $n \cdot c$ is defined as $c^{\dagger} n$.
+
+We demand that there be an adjoint action:
+
+\[ \cat D (b, c \bullet a) \cong \cat C (c^{\dagger} \bullet b, a) \]
+
+\section{Appendix}
+
+\[P \colon \cat D^{op} \times \cat C \to \Set \]
+\[ \Psi \colon [\cat D, \Set] \to [\cat C, \Set] \]
+
+
+\[ F \colon [\cat D, \Set] \]
+$\Psi$ is a left adjoint so it preserves colimits.
+\[P \langle d, c \rangle = \Psi ( \cat D(d, -)) c \]
+
+
+\[ \Psi (F) c = \int^{d'} F d' \times P \langle d', c \rangle \]
+
+Show that these are the inverse of each other. Inserting the formula for $\Psi$ in the definition of $P$ should gives us $P$ back:
+\[  \int^{d'} \cat D(d, -) d' \times P\langle d', c \rangle \cong  P \langle d, c \rangle \]
+which follows from the co-Yoneda lemma.
+
+Inserting the formula for $P$ into the definition of $\Psi$ should give us $\Psi$ back:
+\[  \int^{d'} F d' \times \Psi(\cat D(d', -)) c  \cong \Psi (F) c  \]
+
+
+To prove this, we check it first on representables of the form:
+\[ F d = \cat D (r, d) \]
+We want to show that:
+\[ \int^{d'}  \cat D (r, d')  \times  \Psi(\cat D(d', -)) c \cong  \Psi ( \cat D (r, -) ) c\]
+This follows from the co-Yoneda lemma.
+
+Every co-presheaf is a colimit of representables. Since $\Psi$ is a left adjoint, it preserves all colimits, so the formula works for any co-presheaf.
+
+
+\end{document}
