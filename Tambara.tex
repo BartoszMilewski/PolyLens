@@ -19,6 +19,7 @@
   {\end{minted}}
 \newcommand{\cat}[1]{\mathcal{#1}}%a generic category
 \newcommand{\Cat}[1]{\mathbf{#1}}%a named category
+\newcommand{\Set}{\Cat{Set}}
 
 \author{Bartosz Milewski}
 \title{A Category of Generalized Tambara Modules}
@@ -37,7 +38,7 @@ We start with a monoidal category $\cat M$ and its action in a pair of categorie
 \end{align*}
 A Tambara module is a profunctor $p \colon \cat C^{op} \times \cat D \to \Cat{Set}$ equipped with a family of transformations:
 \[ \alpha_{m, \langle a, b \rangle} \colon p \langle a, b \rangle \to p \langle m \bullet a, m \bullet b \rangle \]
-natural in $m$ and dinatural in $\langle a, b \rangle$, satisfying the unit and associativity conditions. 
+dinatural in $m$ and natural in $\langle a, b \rangle$, satisfying the unit and associativity conditions. 
 
 Tambara modules form a category.  A morphism between Tambara modules $(p, \alpha)$ and $(q, \alpha')$ is a natural transformation:
 
@@ -57,9 +58,11 @@ Tambara modules form a category.  A morphism between Tambara modules $(p, \alpha
 & q \langle m \bullet a, m \bullet b \rangle
  \end{tikzcd}
 \]
-In what follows I'll consider, for the sake of simplicity, Tambara endo-modules of the type  $p \colon \cat C^{op} \times \cat C \to \Cat{Set}$
+In what follows I'll consider, for the sake of simplicity, Tambara endo-modules of the type  $p \colon \cat C^{op} \times \cat C \to \Cat{Set}$.
 
-\section{Generalized Tambara Category}
+\section{Actegories}
+
+An actegory is a category $\cat C$ with a (coherent) action of a monoidal category $\cat M$. Actegories for a given $\cat M$ form a 2-category. Here, I'd like to define a larger category that combines actegories for different monoidal categories.
 
 We start with two monoidal categories $\cat M$ and $\cat N$ with two separate actions on two categories:
 \begin{align*} 
@@ -74,9 +77,13 @@ The two monoidal actions can also be seen, after currying, as strict monoidal fu
 &\cat N \to [\cat D, \cat D]
 \end{align*}
 
-Next we consider a category of monoidal functors $\cat M \to \cat N$. Given a functor $c$, we'll write its action on $m \colon \cat M$ as $c \cdot m$. It is given in terms of composition of the underlying functors. This action produces an object of $\cat N$. It satisfies the usual associativity and unit conditions of a monoidal functor. 
+Next we consider a category of monoidal functors $\cat M \to \cat N$. Given a functor $c$, we'll write its action on an object $m \colon \cat M$ as $c \cdot m$. It is given in terms of composition of the underlying functors. This action produces an object of $\cat N$. It satisfies the usual associativity and unit conditions of a monoidal functor. 
 
-We lift this action to a functor from $\cat C$ to  $\cat D$, or the action:
+We also demand that there be a left adjoint to this functor, defining the action of $c$ on $\cat N$:
+
+\[ \cat N (n, c \cdot m) \cong \cat M (c^{\dagger} n, m) \]
+
+We lift the action of $c$ to a functor from $\cat C$ to  $\cat D$, or the action:
 \[ \bullet \colon \cat M \times \cat C \to \cat D \]
 satisfying the coherence conditions:
 \[
@@ -106,6 +113,42 @@ satisfying the coherence conditions:
  & n \bullet (c \bullet a)
  \end{tikzcd}
 \]
+where $n \cdot c$ is defined as $c^{\dagger} n$.
+
+We demand that there be an adjoint action:
+
+\[ \cat D (b, c \bullet a) \cong \cat C (c^{\dagger} \bullet b, a) \]
+
+\section{Action on co-Presheaves}
+
+Of special interest is the action of a monoidal category on co-presheaves (and, dually, on presheaves). 
+
+\[ \cat C^{op} \times \cat D \to \Cat{Set} \cong [\cat C, \Cat{Set}] \to [\cat D, \Cat{Set}] \]
+
+\[ P \colon  \cat C^{op} \times \cat D \to \Cat{Set} \]
+\[ \Psi \colon [\cat C, \Cat{Set}] \to  [\cat D, \Cat{Set}]\]
+\[ P \langle c, d \rangle = \Psi ( \cat C (c, -)) d\]
+\[ \Psi (f) d = \int^c f c \times P \langle c, d \rangle \]
+
+\[  \int^{c'} \cat C (c, c') \times P \langle c', d \rangle \cong P \langle c, d\rangle \]
+
+\[ \int^c f c \times \Psi ( \cat C (c, -)) d \]
+
+Mapping out:
+
+\[ \int_d \Cat{Set}\big( \int^c f c \times \Psi ( \cat C (c, -)) d, g d \big) \cong \int_d \Cat{Set} (\Psi (f) d, g d) \cong \int_c Set(f c, (\Psi^{\dagger} g) c)\]
+
+\[ \int_{c,d} \Cat{Set}\big( f c \times \Psi ( \cat C (c, -)) d, g d \big)\]
+
+\[ \int_{c,d} \Cat{Set}\big(\Psi ( \cat C (c, -)) d, f c \to g d \big)\]
+
+\[ \int_{c,c'} \Cat{Set}\big( \cat C (c, c'), \Psi^{\dagger} (f c \to g -) c' \big)\]
+
+\[ \int_{c}  \Psi^{\dagger} (f c \to g -) c \]
+
+
+\section{Generalized Tambara Category}
+
 
 Next we consider a Tambara module $p$ in $\cat C^{op} \times \cat C$ with the structure:
 \[ \alpha_{m, \langle a, b \rangle} \colon p \langle a, b \rangle \to p \langle m \bullet a, m \bullet b \rangle \]
@@ -146,6 +189,32 @@ satisfying the following coherence conditions:
 \]
 
 This extends the usual definition of a Tambara category which only works over one particular monoidal category. Here we can move between Tambara modules that are defined over different monoidal categories.
+
+
+\[P \colon \cat D^{op} \times \cat C \to \Set \]
+\[ \Psi \colon [\cat C^{op}, \Set] \to [\cat D^{op}, \Set] \]
+\[ \Psi^{\dagger} \colon [\cat D^{op}, \Set] \to [\cat C^{op}, \Set] \]
+\[ F \colon [\cat C^{op}, \Set] \]
+$\Psi$ is a left adjoint:
+\[ [\cat D^{op}, \Set] (\Psi F, G) \cong [\cat D^{op}, \Set](F, \Psi^{\dagger} G) \]
+\[ \int_d  \Set ((\Psi F) d, G d) \cong  \int_c \Set (F c, (\Psi^{\dagger} G) c) \]
+so it preserves colimits.
+\[P \langle d, c \rangle = \Psi ( \cat C(-, c)) d \]
+\[ \Psi (F) d = \int^{c'} P \langle d, c' \rangle \times F c' \]
+
+Show that these are the inverse of each other. Inserting the formula for $\Psi$ in the definition of $P$ gives us:
+\[ P \langle d, c \rangle \cong \int^{c'} P\langle d, c' \rangle  \times \cat C(-, c) c' \]
+which follows from the co-Yoneda lemma.
+
+Inserting the formula for $P$ into the definition of $\Psi$ results in:
+\[ \Psi (F) d \cong  \int^{c'} \Psi(\cat C(-, c')) d \times F c' \]
+To prove the latter, we try it on representables, i.e.:
+\[ F c' = \cat C (c', r) \]
+We get:
+\[ \Psi (\cat C(-, r)) d \cong \int^{c'} \Psi(\cat C(-, c')) d \times \cat C (c', r) \]
+indeed, the right-hand side can be reduced to:
+\[ \Psi (C(-, r)) d \]
+Every presheaf is a colimit of representables. Since $\Psi$ is a left adjoint, it preserves all colimits, so the formula works for any presheaf.
 
 \section{References}
 
