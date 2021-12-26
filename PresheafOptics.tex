@@ -28,10 +28,38 @@
 
 \section{Motivation}
 
+A lot of optics can be defined using the existential or coend representation:
+\[ \mathcal{O}\langle a, b\rangle \langle s, t \rangle = \int^{m \colon \cat M} \cat C (s, m \bullet a) \times \cat D ( m \bullet b, t) \]
+Here $\cat M$ is a monoidal category with an action on objects of two categories $\cat C$ and $\cat D$ (I'll use the same notation for both actions).
 
-\section{Actegories}
+The idea is that we have a pair of morphisms, one decomposing the source $s$ into the action of some $m$ on $a$, and the other recomposing the target $t$ using the action of the same $m$ on $b$. In most applications we pick $\cat D$ to be the same category as $\cat C$.
 
-An actegory is a category $\cat C$ with a (coherent) action of a monoidal category $\cat M$. Actegories for a given $\cat M$ form a 2-category. Here, I'd like to define a larger category that combines actegories for different monoidal categories.
+Recently, there has been renewed interest in polynomial functors. Morphisms between polynomial functors form a new kind of optics that doesn't neatly fit this mold. They do admit an existential representation or the form:
+\[ \int^{c_{k i}} 
+ \prod_{k \in K} \mathbf{Set} \left(s_k,  \sum_{n \in N} a_n \times c_{n k} \right) \times 
+ \prod_{i \in K}  \mathbf{Set} \left(\sum_{m \in N} b_m \times c_{m i}, t_i \right) \]
+Here the sets $s_k$ and $t_i$ can be treated as fibers over the set $K$, while the sets $a_n$ and $b_m$ are fibers over a different set $N$. 
+
+We can treat these fibrations as functors from discrete categories to $\Set$, that is co-presheaves. For instance $a_n$ is the result of a co-presheaf $a$ acting on an object $n$ of a discrete category $\cat N$. The products over $K$ can be interpreted as ends that define natural transformations between co-presheaves. The problem is that the matrices $c_{n k}$ are fibrated over two different sets. I have previously interpreted them as profunctors:
+\[ c \colon \cat N^{op} \times \cat K \to \Set \]
+In this post I will elaborate on this interpretation.
+
+\section{Co-presheaves}
+
+A co-presheaf category  $[\cat C, Set ]$ behaves, in many respects, like a vector space. For instance, it has a ``basis'' consisting of representable functors $\cat C (r, -)$; in the sense that any co-presheaf is as a colimit of representables. 
+
+\section{Actegories and Optics}
+
+An actegory is a category $\cat C$ with a (coherent) action of a monoidal category $\cat M$. We write such an action as:
+\[ \bullet \colon \cat M \times \cat C \to \cat C \]
+Alternatively, we can curry it to produce a mapping of $\cat M$ to a category of endofunctors:
+\[ \cat M \to [\cat C, \cat C] \]
+Coherence conditions for the action translate directly to the requirement that this mapping be a strict monoidal functor. 
+
+
+
+
+Actegories for a given $\cat M$ form a 2-category. Here, I'd like to define a larger category that combines actegories for different monoidal categories.
 
 We start with two monoidal categories $\cat M$ and $\cat N$ with two separate actions on two categories:
 \begin{align*} 
