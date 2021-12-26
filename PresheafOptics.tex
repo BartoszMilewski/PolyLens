@@ -28,13 +28,13 @@
 
 \section{Motivation}
 
-A lot of optics can be defined using the existential or coend representation:
+A lot of optics can be defined using the existential, or coend, representation:
 \[ \mathcal{O}\langle a, b\rangle \langle s, t \rangle = \int^{m \colon \cat M} \cat C (s, m \bullet a) \times \cat D ( m \bullet b, t) \]
 Here $\cat M$ is a monoidal category with an action on objects of two categories $\cat C$ and $\cat D$ (I'll use the same notation for both actions).
 
-The idea is that we have a pair of morphisms, one decomposing the source $s$ into the action of some $m$ on $a$, and the other recomposing the target $t$ using the action of the same $m$ on $b$. In most applications we pick $\cat D$ to be the same category as $\cat C$.
+The idea is that we have a pair of morphisms, one decomposing the source $s$ into the action of some $m$ on $a$, and the other recomposing the target $t$ from the action of the same $m$ on $b$. In most applications we pick $\cat D$ to be the same category as $\cat C$.
 
-Recently, there has been renewed interest in polynomial functors. Morphisms between polynomial functors form a new kind of optics that doesn't neatly fit this mold. They do admit an existential representation or the form:
+Recently, there has been renewed interest in polynomial functors. Morphisms between polynomial functors form a new kind of optics that doesn't neatly fit this mold. They do, however, admit an existential representation or the form:
 \[ \int^{c_{k i}} 
  \prod_{k \in K} \mathbf{Set} \left(s_k,  \sum_{n \in N} a_n \times c_{n k} \right) \times 
  \prod_{i \in K}  \mathbf{Set} \left(\sum_{m \in N} b_m \times c_{m i}, t_i \right) \]
@@ -46,7 +46,30 @@ In this post I will elaborate on this interpretation.
 
 \section{Co-presheaves}
 
-A co-presheaf category  $[\cat C, Set ]$ behaves, in many respects, like a vector space. For instance, it has a ``basis'' consisting of representable functors $\cat C (r, -)$; in the sense that any co-presheaf is as a colimit of representables. 
+A co-presheaf category  $[\cat C, Set ]$ behaves, in many respects, like a vector space. For instance, it has a ``basis'' consisting of representable functors $\cat C (r, -)$; in the sense that any co-presheaf is as a colimit of representables. Moreover, colimit-preserving functors between co-presheaf categories are very similar to linear transformations between vector spaces. Of particular interest are functors that are left adjoint to some other functors, since left adjoints preserve colimits. 
+
+The polynomial lens formula has a form that suggests vector-space interpretation. We have one vector space with vectors $\vec{s}$ and $\vec{t}$ and another with $\vec{a}$ and $\vec{b}$. Rectangular matrices $c_{n k}$ can be seen as components of a linear transformation between these two vector spaces. We can, for instance, write:
+\[  \sum_{n \in N} a_n \times c_{n k} = c^T a \]
+where $c^T$ is the transposed matrix, which we can interpret as the analog of a left adjoint. 
+
+We can now re-interpret the polynomial lens formula in terms of co-presheaves. We no longer intepret $\cat N$ and $\cat K$ as discrete categories. We have:
+\[ s, t \colon [\cat K, \Set] \]
+\[a, b \colon [\cat N, \Set] \]
+In this interpretation $c$ is a functor:
+\[ c \colon [\cat N, \Set] \to [\cat K, \Set] \]
+We'll write the action of this functor on a presheaf $a$ as $c \bullet a$.
+
+We assume that this functor is a left adjoint and therefore preserves colimits. 
+
+\[ [\cat K, \Set] (c \bullet a, t) \cong [\cat N, \Set] (a, c^{\dagger} \bullet t) \]
+where:
+\[ c^{\dagger} \colon [\cat K, \Set] \to [\cat N, \Set] \]
+
+We can now generalize the polynomial optic formula to:
+\[ \int^{c} 
+ [\cat K, \Set] \left(s,  c \bullet a \right) \times 
+ [\cat K, \Set] \left(c \bullet b, t \right) \]
+
 
 \section{Actegories and Optics}
 
