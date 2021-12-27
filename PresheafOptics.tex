@@ -50,7 +50,7 @@ A co-presheaf category  $[\cat C, Set ]$ behaves, in many respects, like a vecto
 
 The polynomial lens formula has a form that suggests vector-space interpretation. We have one vector space with vectors $\vec{s}$ and $\vec{t}$ and another with $\vec{a}$ and $\vec{b}$. Rectangular matrices $c_{n k}$ can be seen as components of a linear transformation between these two vector spaces. We can, for instance, write:
 \[  \sum_{n \in N} a_n \times c_{n k} = c^T a \]
-where $c^T$ is the transposed matrix, which we can interpret as the analog of a left adjoint. 
+where $c^T$ is the transposed matrix. Transposition can be interpreted as the analog of an adjunction. 
 
 We can now re-interpret the polynomial lens formula in terms of co-presheaves. We no longer intepret $\cat N$ and $\cat K$ as discrete categories. We have:
 \[ s, t \colon [\cat K, \Set] \]
@@ -66,107 +66,76 @@ where:
 \[ c^{\dagger} \colon [\cat K, \Set] \to [\cat N, \Set] \]
 
 We can now generalize the polynomial optic formula to:
-\[ \int^{c} 
+\[ \mathcal{O}\langle a, b\rangle \langle s, t \rangle = \int^{c} 
+ [\cat K, \Set] \left(s,  c \bullet a \right) \times 
+ [\cat K, \Set] \left(c \bullet b, t \right) \]
+The coend is taken over all functors that have a right adjoint. Fortunately there is a better representation. It turns out that left adjoint functors:
+\[ c \colon [\cat N, \Set] \to [\cat K, \Set] \]
+are equivalent to profunctors (see the Appendix for the proof):
+\[ p \colon \cat N^{op} \times \cat K \to \Set \]
+given by the formula:
+\[p \langle n, k \rangle = c ( \cat N(n, -)) k \]
+where $\cat N(n, -)$ is a representable co-presheaf.
+
+The action of $c$ can be expressed as a coend:
+\[ (c \bullet a) k = \int^{n} a(n) \times p \langle n, k \rangle \]
+The co-presheaf optic is then a coend over all profunctors $p \colon \cat N^{op} \times \cat K \to \Set$:
+\[ \int^{p} 
+ [\cat K, \Set] \left(s,  \int^{n} a(n) \times p \langle n, - \rangle \right) \times 
+ [\cat K, \Set] \left(\int^{n'} b(n') \times p \langle n', - \rangle, t \right) \]
+ 
+ \section{Composition}
+
+The composition of two functors:
+\[ c \colon  [\cat N, \Set] \to [\cat K, \Set] \]
+and:
+\[ c' \colon  [\cat K, \Set] \to [\cat M, \Set] \]
+is equivalent to profunctor composition. Indeed, the profunctor $p' \diamond p$ corresponding to $c' \circ c$ is given by:
+\[(p' \diamond p) \langle n, m \rangle = (c' \circ c) ( \cat N(n, -)) m \]
+
+\[(c' ( c ( \cat N(n, -))) m 
+ \cong \int^{k} c ( \cat N(n, -)) k \times p' \langle k, m \rangle \]
+\[  \cong \int^{k} p \langle n, k \rangle \times p' \langle k, m \rangle \]
+which is the standard definition of profunctor composition. 
+
+Consider two composable co-presheaf optics, $\mathcal{O}\langle a, b\rangle \langle s, t \rangle$ and $\mathcal{O}\langle a', b' \rangle \langle a, b \rangle$. Let's write:
+\[ \mathcal{O}\langle a, b\rangle \langle s, t \rangle = \int^{c}  l_c (s,  a ) \times r_c (b, t) \]
+ where:
+\[ l_c (s,  a ) = [\cat K, \Set] \left(s,  c \bullet a \right) \] 
+\[ r_c (b, t) = [\cat K, \Set] \left(c \bullet b, t \right) \]
+and similarly for the second optic.
+
+
+Since functors between co-presheaves can be composed
+\[ \mathcal{O}\langle a, b\rangle \langle s, t \rangle = \int^{c} 
  [\cat K, \Set] \left(s,  c \bullet a \right) \times 
  [\cat K, \Set] \left(c \bullet b, t \right) \]
 
 
-\section{Actegories and Optics}
-
-An actegory is a category $\cat C$ with a (coherent) action of a monoidal category $\cat M$. We write such an action as:
-\[ \bullet \colon \cat M \times \cat C \to \cat C \]
-Alternatively, we can curry it to produce a mapping of $\cat M$ to a category of endofunctors:
-\[ \cat M \to [\cat C, \cat C] \]
-Coherence conditions for the action translate directly to the requirement that this mapping be a strict monoidal functor. 
-
-
-
-
-Actegories for a given $\cat M$ form a 2-category. Here, I'd like to define a larger category that combines actegories for different monoidal categories.
-
-We start with two monoidal categories $\cat M$ and $\cat N$ with two separate actions on two categories:
-\begin{align*} 
-\bullet &\colon \cat M \times \cat C \to \cat C 
-\\
- \bullet &\colon \cat N \times \cat D \to \cat D 
-\end{align*}
-The two monoidal actions can also be seen, after currying, as strict monoidal functors:
-\begin{align*}
-&\cat M \to [\cat C, \cat C]
-\\
-&\cat N \to [\cat D, \cat D]
-\end{align*}
-
-Next we consider a category of monoidal functors $\cat M \to \cat N$. Given a functor $c$, we'll write its action on an object $m \colon \cat M$ as $c \cdot m$. It is given in terms of composition of the underlying functors. This action produces an object of $\cat N$. It satisfies the usual associativity and unit conditions of a monoidal functor. 
-
-We also demand that there be a left adjoint to this functor, defining the action of $c$ on $\cat N$:
-
-\[ \cat N (n, c \cdot m) \cong \cat M (c^{\dagger} n, m) \]
-
-We lift the action of $c$ to a functor from $\cat C$ to  $\cat D$, or the action:
-\[ \bullet \colon \cat M \times \cat C \to \cat D \]
-satisfying the coherence conditions:
-\[
- \begin{tikzcd}
- a
- \arrow [r, "m \bullet"] 
- \arrow [d, "(c \cdot m) \bullet"']
- & m \bullet a
- \arrow [d, "c \bullet"]
- \\
- (c \cdot m) \bullet a
- \arrow [r, "\cong"]
- & c \bullet (m \bullet a)
- \end{tikzcd}
-\]
-
-\[
- \begin{tikzcd}
- a
- \arrow [r, "c \bullet"] 
- \arrow [d, "(n \cdot c) \bullet"']
- & c \bullet a
- \arrow [d, "n \bullet"]
- \\
- (n \cdot c) \bullet a
- \arrow [r, "\cong"]
- & n \bullet (c \bullet a)
- \end{tikzcd}
-\]
-where $n \cdot c$ is defined as $c^{\dagger} n$.
-
-We demand that there be an adjoint action:
-
-\[ \cat D (b, c \bullet a) \cong \cat C (c^{\dagger} \bullet b, a) \]
-
 \section{Appendix}
 
-\[P \colon \cat D^{op} \times \cat C \to \Set \]
-\[ \Psi \colon [\cat D, \Set] \to [\cat C, \Set] \]
+I will show that a functor between two co-presheaves that has a right adjoint and therefore preserves colimits:
+\[ c \colon [\cat N, \Set] \to [\cat K, \Set] \]
+is equivalent to a profunctor:
+\[p \colon \cat N^{op} \times \cat K \to \Set \]
 
+The profunctor is given by:
+\[p \langle n, k \rangle = c ( \cat N(n, -)) k \]
+and the functor $c$ can be recovered using the formula:
+\[ c (a) k = \int^{n'} a (n') \times p \langle n', k \rangle \]
+where:
+\[ a \colon [\cat N, \Set] \]
 
-\[ F \colon [\cat D, \Set] \]
-$\Psi$ is a left adjoint so it preserves colimits.
-\[P \langle d, c \rangle = \Psi ( \cat D(d, -)) c \]
-
-
-\[ \Psi (F) c = \int^{d'} F d' \times P \langle d', c \rangle \]
-
-Show that these are the inverse of each other. Inserting the formula for $\Psi$ in the definition of $P$ should gives us $P$ back:
-\[  \int^{d'} \cat D(d, -) d' \times P\langle d', c \rangle \cong  P \langle d, c \rangle \]
+I'll show that these formulas are the inverse of each other. First, inserting the formula for $c$ in the definition of $p$ should gives us $p$ back:
+\[  \int^{n'} \cat N(n, -) (n') \times p\langle n', k \rangle \cong  p \langle n, k \rangle \]
 which follows from the co-Yoneda lemma.
 
-Inserting the formula for $P$ into the definition of $\Psi$ should give us $\Psi$ back:
-\[  \int^{d'} F d' \times \Psi(\cat D(d', -)) c  \cong \Psi (F) c  \]
-
-
-To prove this, we check it first on representables of the form:
-\[ F d = \cat D (r, d) \]
+Second, inserting the formula for $p$ into the definition of $c$ should give us $c$ back:
+\[  \int^{n'} a n' \times c(\cat N(n', -)) k  \cong c (a) k  \]
+Since $c$ preserves all colimits, and any co-presheaf is a colimit of representables, it's enough that we prove this identity for a representable:
+\[ a (n) = \cat N (r, n) \]
 We want to show that:
-\[ \int^{d'}  \cat D (r, d')  \times  \Psi(\cat D(d', -)) c \cong  \Psi ( \cat D (r, -) ) c\]
+\[ \int^{n'}  \cat N (r, n')  \times  c(\cat N(n', -)) k \cong  c ( \cat N (r, -) ) k\]
 This follows from the co-Yoneda lemma.
-
-Every co-presheaf is a colimit of representables. Since $\Psi$ is a left adjoint, it preserves all colimits, so the formula works for any co-presheaf.
-
 
 \end{document}
