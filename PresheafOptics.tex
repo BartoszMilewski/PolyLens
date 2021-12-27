@@ -22,25 +22,30 @@
 \newcommand{\Set}{\Cat{Set}}
 
 \author{Bartosz Milewski}
-\title{Presheaf Optics}
+\title{Co-Presheaf Optics}
 \begin{document}
 \maketitle{}
+
+\section{Abstract}
+
+The co-presheaf optic is a new kind of optic that generalizes the polynomial lens. Its distinguishing feature is that it's not based on the action of a monoidal category. Instead the action is parameterized by functors between different co-presheaves. The composition of these actions corresponds to composition of functors rather than the more traditional tensor product. Such composition can be also translated to the composition of the corresponding profunctors. Again, not any two profunctors can be composed. 
 
 \section{Motivation}
 
 A lot of optics can be defined using the existential, or coend, representation:
 \[ \mathcal{O}\langle a, b\rangle \langle s, t \rangle = \int^{m \colon \cat M} \cat C (s, m \bullet a) \times \cat D ( m \bullet b, t) \]
-Here $\cat M$ is a monoidal category with an action on objects of two categories $\cat C$ and $\cat D$ (I'll use the same notation for both actions).
+Here $\cat M$ is a monoidal category with an action on objects of two categories $\cat C$ and $\cat D$ (I'll use the same notation for both actions). The actions are composed using the tensor product in $\cat M$:
+\[ n \bullet (m \bullet a) = (n \otimes m) \bullet a \]
 
-The idea is that we have a pair of morphisms, one decomposing the source $s$ into the action of some $m$ on $a$, and the other recomposing the target $t$ from the action of the same $m$ on $b$. In most applications we pick $\cat D$ to be the same category as $\cat C$.
+The idea of this optic is that we have a pair of morphisms, one decomposing the source $s$ into the action of some $m$ on $a$, and the other recomposing the target $t$ from the action of the same $m$ on $b$. In most applications we pick $\cat D$ to be the same category as $\cat C$.
 
-Recently, there has been renewed interest in polynomial functors. Morphisms between polynomial functors form a new kind of optics that doesn't neatly fit this mold. They do, however, admit an existential representation or the form:
+Recently, there has been renewed interest in polynomial functors. Morphisms between polynomial functors form a new kind of optic that doesn't neatly fit this mold. They do, however, admit an existential representation or the form:
 \[ \int^{c_{k i}} 
  \prod_{k \in K} \mathbf{Set} \left(s_k,  \sum_{n \in N} a_n \times c_{n k} \right) \times 
  \prod_{i \in K}  \mathbf{Set} \left(\sum_{m \in N} b_m \times c_{m i}, t_i \right) \]
 Here the sets $s_k$ and $t_i$ can be treated as fibers over the set $K$, while the sets $a_n$ and $b_m$ are fibers over a different set $N$. 
 
-We can treat these fibrations as functors from discrete categories to $\Set$, that is co-presheaves. For instance $a_n$ is the result of a co-presheaf $a$ acting on an object $n$ of a discrete category $\cat N$. The products over $K$ can be interpreted as ends that define natural transformations between co-presheaves. The problem is that the matrices $c_{n k}$ are fibrated over two different sets. I have previously interpreted them as profunctors:
+Alternatively, we can treat these fibrations as functors from discrete categories to $\Set$, that is co-presheaves. For instance $a_n$ is the result of a co-presheaf $a$ acting on an object $n$ of a discrete category $\cat N$. The products over $K$ can be interpreted as ends that define natural transformations between co-presheaves. The problem is that the matrices $c_{n k}$ are fibrated over two different sets. I have previously interpreted them as profunctors:
 \[ c \colon \cat N^{op} \times \cat K \to \Set \]
 In this post I will elaborate on this interpretation.
 
@@ -50,12 +55,12 @@ A co-presheaf category  $[\cat C, Set ]$ behaves, in many respects, like a vecto
 
 The polynomial lens formula has a form that suggests vector-space interpretation. We have one vector space with vectors $\vec{s}$ and $\vec{t}$ and another with $\vec{a}$ and $\vec{b}$. Rectangular matrices $c_{n k}$ can be seen as components of a linear transformation between these two vector spaces. We can, for instance, write:
 \[  \sum_{n \in N} a_n \times c_{n k} = c^T a \]
-where $c^T$ is the transposed matrix. Transposition can be interpreted as the analog of an adjunction. 
+where $c^T$ is the transposed matrix. Transposition can be interpreted as the analog of adjunction. 
 
-We can now re-interpret the polynomial lens formula in terms of co-presheaves. We no longer intepret $\cat N$ and $\cat K$ as discrete categories. We have:
+We can now re-cast the polynomial lens formula in terms of co-presheaves. We no longer intepret $\cat N$ and $\cat K$ as discrete categories. We have:
 \[ s, t \colon [\cat K, \Set] \]
 \[a, b \colon [\cat N, \Set] \]
-In this interpretation $c$ is a functor:
+In this interpretation $c$ is a functor between categories of co-presheaves:
 \[ c \colon [\cat N, \Set] \to [\cat K, \Set] \]
 We'll write the action of this functor on a presheaf $a$ as $c \bullet a$.
 
@@ -69,7 +74,7 @@ We can now generalize the polynomial optic formula to:
 \[ \mathcal{O}\langle a, b\rangle \langle s, t \rangle = \int^{c} 
  [\cat K, \Set] \left(s,  c \bullet a \right) \times 
  [\cat K, \Set] \left(c \bullet b, t \right) \]
-The coend is taken over all functors that have a right adjoint. Fortunately there is a better representation. It turns out that left adjoint functors:
+The coend is taken over all functors that have a right adjoint. Fortunately there is a better representation for such functors. It turns out that colimit preserving functors:
 \[ c \colon [\cat N, \Set] \to [\cat K, \Set] \]
 are equivalent to profunctors (see the Appendix for the proof):
 \[ p \colon \cat N^{op} \times \cat K \to \Set \]
@@ -106,12 +111,15 @@ Consider two composable co-presheaf optics, $\mathcal{O}\langle a, b\rangle \lan
 The second tells us that there exists a $c'$ and a pair:
 \[ l'_c (a,  a' ) = [\cat K, \Set] \left(a,  c' \bullet a' \right) \] 
 \[ r'_c (b', b) = [\cat K, \Set] \left(c' \bullet b', b \right) \]
-The composition of the two should be an optic $\mathcal{O}\langle a', b'\rangle \langle s, t \rangle$. Indeed we can construct such an optic using $c' \circ c$ and a pair of natural transformations:
+The composition of the two should be an optic $\mathcal{O}\langle a', b'\rangle \langle s, t \rangle$. Indeed, we can construct such an optic using $c' \circ c$ and a pair of natural transformations:
 \[s \xrightarrow{l_c (s,  a )} c \bullet a \xrightarrow{c \,\circ \, l'_c (s,  a )} c \bullet (c' \bullet a')
   \xrightarrow{assoc} (c \circ c') \bullet a'\]
 \[ (c \circ c') \bullet b' \xrightarrow{assoc^{-1}} c \bullet (c' \bullet b') \xrightarrow{c \, \circ \, r'_c (b, t)} c \bullet b
  \xrightarrow{r_c (b, t)}  t \]
+ 
+\section{Generalizations}
 
+By duality, there is a corresponding optic based on presheaves. Also, (co-) presheaves can be naturally generalized to enriched categories, where the correspondence between left adjoint functors and enriched profunctors holds as well. 
 
 \section{Appendix}
 
