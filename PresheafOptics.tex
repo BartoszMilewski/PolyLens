@@ -85,12 +85,14 @@ The co-presheaf optic is then a coend over all profunctors $p \colon \cat N^{op}
  [\cat K, \Set] \left(\int^{n'} b(n') \times p \langle n', - \rangle, t \right) \]
  
  \section{Composition}
-
-The composition of two functors:
+ 
+ We have defined the action $c \bullet a$ as the action of a functor on a co-presheaf. Given two composable functors:
 \[ c \colon  [\cat N, \Set] \to [\cat K, \Set] \]
 and:
 \[ c' \colon  [\cat K, \Set] \to [\cat M, \Set] \]
-is equivalent to profunctor composition. Indeed, the profunctor $p' \diamond p$ corresponding to $c' \circ c$ is given by:
+we automatically get the associativity law:
+\[ c' \bullet (c \bullet a) = (c' \circ c) a \]
+The composition of functors between co-presheaves translates directly to profunctor composition. Indeed, the profunctor $p' \diamond p$ corresponding to $c' \circ c$ is given by:
 \[(p' \diamond p) \langle n, m \rangle = (c' \circ c) ( \cat N(n, -)) m \]
 
 \[(c' ( c ( \cat N(n, -))) m 
@@ -98,18 +100,17 @@ is equivalent to profunctor composition. Indeed, the profunctor $p' \diamond p$ 
 \[  \cong \int^{k} p \langle n, k \rangle \times p' \langle k, m \rangle \]
 which is the standard definition of profunctor composition. 
 
-Consider two composable co-presheaf optics, $\mathcal{O}\langle a, b\rangle \langle s, t \rangle$ and $\mathcal{O}\langle a', b' \rangle \langle a, b \rangle$. Let's write:
-\[ \mathcal{O}\langle a, b\rangle \langle s, t \rangle = \int^{c}  l_c (s,  a ) \times r_c (b, t) \]
- where:
+Consider two composable co-presheaf optics, $\mathcal{O}\langle a, b\rangle \langle s, t \rangle$ and $\mathcal{O}\langle a', b' \rangle \langle a, b \rangle$. The first one tells us that there exists a $c$ and a pair of natural transformations:
 \[ l_c (s,  a ) = [\cat K, \Set] \left(s,  c \bullet a \right) \] 
 \[ r_c (b, t) = [\cat K, \Set] \left(c \bullet b, t \right) \]
-and similarly for the second optic.
-
-
-Since functors between co-presheaves can be composed
-\[ \mathcal{O}\langle a, b\rangle \langle s, t \rangle = \int^{c} 
- [\cat K, \Set] \left(s,  c \bullet a \right) \times 
- [\cat K, \Set] \left(c \bullet b, t \right) \]
+The second tells us that there exists a $c'$ and a pair:
+\[ l'_c (a,  a' ) = [\cat K, \Set] \left(a,  c' \bullet a' \right) \] 
+\[ r'_c (b', b) = [\cat K, \Set] \left(c' \bullet b', b \right) \]
+The composition of the two should be an optic $\mathcal{O}\langle a', b'\rangle \langle s, t \rangle$. Indeed we can construct such an optic using $c' \circ c$ and a pair of natural transformations:
+\[s \xrightarrow{l_c (s,  a )} c \bullet a \xrightarrow{c \,\circ \, l'_c (s,  a )} c \bullet (c' \bullet a')
+  \xrightarrow{assoc} (c \circ c') \bullet a'\]
+\[ (c \circ c') \bullet b' \xrightarrow{assoc^{-1}} c \bullet (c' \bullet b') \xrightarrow{c \, \circ \, r'_c (b, t)} c \bullet b
+ \xrightarrow{r_c (b, t)}  t \]
 
 
 \section{Appendix}
