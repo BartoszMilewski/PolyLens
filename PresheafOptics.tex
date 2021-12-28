@@ -39,13 +39,13 @@ Here $\cat M$ is a monoidal category with an action on objects of two categories
 
 The idea of this optic is that we have a pair of morphisms, one decomposing the source $s$ into the action of some $m$ on $a$, and the other recomposing the target $t$ from the action of the same $m$ on $b$. In most applications we pick $\cat D$ to be the same category as $\cat C$.
 
-Recently, there has been renewed interest in polynomial functors. Morphisms between polynomial functors form a new kind of optic that doesn't neatly fit this mold. They do, however, admit an existential representation or the form:
+Recently, there has been renewed interest in polynomial functors. Morphisms between polynomial functors form a new kind of optic that doesn't neatly fit this mold. They do, however, admit an \href{https://bartoszmilewski.com/2021/12/07/polylens/}{existential representation} or the form:
 \[ \int^{c_{k i}} 
  \prod_{k \in K} \mathbf{Set} \left(s_k,  \sum_{n \in N} a_n \times c_{n k} \right) \times 
  \prod_{i \in K}  \mathbf{Set} \left(\sum_{m \in N} b_m \times c_{m i}, t_i \right) \]
 Here the sets $s_k$ and $t_i$ can be treated as fibers over the set $K$, while the sets $a_n$ and $b_m$ are fibers over a different set $N$. 
 
-Alternatively, we can treat these fibrations as functors from discrete categories to $\Set$, that is co-presheaves. For instance $a_n$ is the result of a co-presheaf $a$ acting on an object $n$ of a discrete category $\cat N$. The products over $K$ can be interpreted as ends that define natural transformations between co-presheaves. The problem is that the matrices $c_{n k}$ are fibrated over two different sets. I have previously interpreted them as profunctors:
+Alternatively, we can treat these fibrations as functors from discrete categories to $\Set$, that is co-presheaves. For instance $a_n$ is the result of a co-presheaf $a$ acting on an object $n$ of a discrete category $\cat N$. The products over $K$ can be interpreted as ends that define natural transformations between co-presheaves. The problem is that the matrices $c_{n k}$ are fibrated over two different sets. I have previously interpreted them as \href{https://bartoszmilewski.com/2021/12/10/profunctor-representation-of-a-polynomial-lens/}{profunctors}:
 \[ c \colon \cat N^{op} \times \cat K \to \Set \]
 In this post I will elaborate on this interpretation.
 
