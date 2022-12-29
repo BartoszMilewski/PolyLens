@@ -1,0 +1,195 @@
+\documentclass[11pt]{amsart}          
+\usepackage{amsfonts}
+\usepackage{amssymb}  
+\usepackage{amsthm} 
+\usepackage{amsmath} 
+\usepackage{tikz-cd}
+\usepackage{float}
+\usepackage[]{hyperref}
+\usepackage{minted}
+\hypersetup{
+  colorlinks,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue}
+\newcommand{\hask}[1]{\mintinline{Haskell}{#1}}
+\newenvironment{haskell}
+  {\VerbatimEnvironment
+  	\begin{minted}[escapeinside=??, mathescape=true,frame=single, framesep=5pt, tabsize=1]{Haskell}}
+  {\end{minted}}
+\newcommand*\circled[3]
+  {\tikz[baseline={([yshift=#2]current bounding box.center)}]{
+      \node[shape=circle,draw,inner sep=#1] (char) {#3};}}
+\newcommand{\actL}{\mathbin{\circled{0.5pt}{-0.55ex}{\scalebox{0.75}{\tiny{$\mathsf{L}$}}}}}
+\newcommand{\actR}{\mathbin{\circled{0.5pt}{-0.55ex}{\scalebox{0.75}{\tiny{$\mathsf{R}$}}}}}
+
+\newcommand{\cat}[1]{\mathcal{#1}}%a generic category
+\newcommand{\Cat}[1]{\mathbf{#1}}%a named category
+\newcommand{\Set}{\Cat{Set}}
+
+\author{Bartosz Milewski}
+\title{Orbital Functors}
+
+\begin{document}
+\maketitle{}
+
+\section{Category of Orbital Functors}
+
+Action of a monoidal category $\cat M$ on $\cat C$ given by an endofunctor:
+\[ m \bullet \colon \cat C \to \cat C \]
+satisfying the laws:
+\begin{align*}
+1 \bullet a &= a \\
+(m \cdot n) \bullet a &= m \bullet (n \bullet a)
+\end{align*}
+
+Lax orbital functor $F \colon \cat C \to \Set$ is equipped with the structure:
+\[ \alpha_{m, a} \colon F a \to F (m \bullet a) \]
+which is a natural transformations that let's us extend the functor along the orbits of $m \bullet$. We have the following coherence conditions:
+\begin{align*}
+\alpha_{1, a} &= id_{F a} \\
+\alpha_{n \cdot m, a} &= \alpha_{n, a} \circ \alpha_{m, a}
+\end{align*}
+
+These functors form a category $\mathbf{Orb}$.  A morphisms from $(F, \alpha)$ to $(G, \beta)$ is a natural transformation that maps the two structures:
+\[
+\begin{tikzcd}
+F a
+\arrow[r, "\mu_a"]
+\arrow[d, "\alpha"]
+& G a
+\arrow[d, "\beta"]
+\\ F (m \bullet a) 
+\arrow[r, "\mu_{m \bullet a}"]
+& G (m \bullet a)
+\end{tikzcd}
+\]
+
+\section{Category of Orbits}
+
+Category $\cat O$ of orbits has the same objects as $\cat C$, but its hom-sets that are given by the colimit formula. We use the coend notation for the colimit (a colimit of $F$ is a coend of a profunctor $P\langle x, y \rangle = F y$):
+\[ \cat O(a, b) = \int^m \cat C(a, m \bullet b) \]
+An element of the hom-set can be constructed by injecting a pair $(m, f \colon a \to m \bullet b)$ into the colimit.
+
+Composition: 
+\[ \circ \colon \cat O(b, c) \times \cat O(a, b) \to \cat O(a, c) \]
+is a member of the set:
+
+\[ \Set \big(\int^m \cat C(b, m \bullet c) \times \int^{n} \cat C(a, n \bullet b) , \int^k \cat C(a, k \bullet c) \big) \]
+By cocontuity of the hom-functor, we can replace the colimit with the limit (using the end notation):
+\[\int_{m,n}  \Set \big(\cat C(b, m \bullet c) \times \cat C(a, n \bullet b) , \int^n \cat C(a, n \bullet c) \big) \]
+Given two morphisms $f \colon b \to m \bullet c $ and $g \colon a \to n \bullet b$, we can produce the composition (using the functoriality of $m \bullet$):
+\[ (n \bullet f ) \circ g \colon a \to (n \cdot m) \bullet c \]
+and inject it into the colimit with $k = n \cdot m$.
+The identity morphism at $a$ is given by the pair $(1, id_a)$
+
+\section{Presheaves on Orbits}
+
+The category of presheaves $[ \cat O^{op}, \Set]$ is isomorphic to the category $\mathbf {Orb}$ of lax orbital functors. 
+
+
+\[
+\begin{tikzcd}
+\Set
+& \Set
+\\ \cat O^{op}
+\arrow[u, "\hat F"]
+& \cat C
+\arrow[u, "{(F, \alpha)}"]
+\end{tikzcd}
+\]
+
+Indeed, given a presheaf $\hat F: \cat O^{op} \to \Set$ we construct a functor $F \colon \cat C \to \Set$ which on objects is the same as $\hat F$. 
+
+Let's define the action of $F$ on morphisms. Given a morphism $f \colon a \to b$ in $\cat C$, we first construct a pair $(f, 1)$ with the unit monoidal action, inject it into the colimit to get an element of $\cat O (a, b)$, and apply $\hat F$ to it.
+
+The resulting functor is automatically lax orbital, with the structure $\alpha_{m, a}$ given by the action of $\hat F$ on the colimit constructed from $(id_{m \bullet a}, m)$, which is a member of $\cat O(m \bullet a, a)$ 
+
+\[
+\begin{tikzcd}
+\Set
+& \hat F a
+\arrow[r, "{\alpha_{m, a}}"]
+& \hat F (m \bullet a)
+\\ \cat O^{op}
+\arrow[u, "\hat F"]
+& a
+& m \bullet a
+\arrow[l, "{\cat O(m \bullet a, a)}"]
+\end{tikzcd}
+\]
+
+
+\[ \alpha_{m, a} \in \hat F \big(\cat O (m \bullet a, a)\big) = \hat F\big(\int^m \cat C (m \bullet a, m \bullet a) \big)\]
+
+Conversely, given a lax orbital functor $F \colon \cat C \to \Set$, we can build a presheaf $\hat F \colon \cat O^{op} \to \Set$ that is identity on objects. Its action on morphisms is a mapping of hom-sets:
+\[ \cat O (b, a) \to \Set (F a, F b) \]
+Such a mapping is a member of:
+\[ \Set \big (\int^m \cat C (b, m \bullet a), \Set (F a, F b) \big) \]
+Using continuity and the currying adjunction in $\Set$ we get:
+\[ \int_m \Set \big ( \cat C (b, m \bullet a) \times F a, F b \big) \]
+Given a morphism $f \colon b \to m \bullet a$ and the set $F a$, we first apply $\alpha_{m, a}$ to $F a$ to get $F (m \bullet a)$ and follow it by $F f$ to get $F b$.
+
+The mapping between these two functor categories is functorial. Consider a natural transformation $\mu \colon \hat F \to \hat G$. For any morphisms $g \in \cat O(b, a)$, the naturality square reads:
+\[
+\begin{tikzcd}
+\hat F b
+\arrow[r, "\mu_b"]
+& \hat G b
+\\
+\hat F a
+\arrow[u, "\hat F g"]
+\arrow[r, "\mu_a"]
+& \hat G a
+\arrow[u, "\hat G g"]
+\end{tikzcd}
+\]
+
+We map $\mu$ to a natural transformation between two orbital functors: $(F, \alpha) \to (G, \beta)$. Since $\hat F$ and $F$ are the same on objects, the same $\mu$ can be used to map $F$ to $G$. 
+
+Naturality condition, however, involves the mapping of morphisms. We have to show that, for any $f \colon a \to b$ the following square commutes:
+\[
+\begin{tikzcd}
+F b
+\arrow[r, "\mu_b"]
+& G b
+\\
+F a
+\arrow[u, "F f"]
+\arrow[r, "\mu_a"]
+&  G a
+\arrow[u, "G f"]
+\end{tikzcd}
+\]
+The lifting of $f$ is done by injecting $(f, 1)$ into $\cat O(a, b)$ and applying $\hat F$ (or $\hat G$) to it. So the naturality of $\mu$ with respect to $F$ follows from the naturality with respect to $\hat F$.
+
+Similarly, the induced structure maps are preserved, since they are given by the lifting of morphisms in $\cat O(m \bullet a, a)$:
+\[
+\begin{tikzcd}
+F a
+\arrow[r, "\mu_a"]
+\arrow[d, "\alpha"]
+& G a
+\arrow[d, "\beta"]
+\\ F (m \bullet a) 
+\arrow[r, "\mu_{m \bullet a}"]
+& G (m \bullet a)
+\end{tikzcd}
+\]
+
+\section{Tannakian Reconstruction}
+
+Tannakian reconstruction for categories expresses a hom-set in a category as an end over all co-presheaves on that category:
+\[ \int_{\hat F \colon [\cat C, \Set]} \Set (\hat F a, \hat F b) \cong \cat C(a, b) \]
+In particular, if we choose our category as the (opposite of the) category of orbits, we get:
+\[ \int_{\hat F \colon [\cat O^{op}, \Set]} \Set (\hat F a, \hat F b) \cong \cat O(b, a) \]
+As we've seen, this category is equivalent to the category of orbital functors, so we get:
+\[ \int_{ F \colon \mathbf{Orb}} \Set (F a, F b) \cong \int^{m \colon \cat M} \cat C(b, m \bullet a) \]
+The left-hand side is a set of natural transformations between two fiber functors. A fiber functor maps a functor $F$ to its value (a set) at a fixed object $a$:
+\[ \Phi_a \colon F \mapsto F a \]
+Conceptually, a fiber functor ``probes'' the environment around a fixed object. 
+
+The advantage of this representation is that it replaces a somewhat messy composition of morphisms in $\cat O$ (the right hand-side) with simple composition of functions in $\Set$ (the left-hand side).
+
+
+\end{document}
