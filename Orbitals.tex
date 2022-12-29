@@ -69,7 +69,7 @@ F a
 
 Category $\cat O$ of orbits has the same objects as $\cat C$, but its hom-sets that are given by the colimit formula. We use the coend notation for the colimit (a colimit of $F$ is a coend of a profunctor $P\langle x, y \rangle = F y$):
 \[ \cat O(a, b) = \int^m \cat C(a, m \bullet b) \]
-An element of the hom-set can be constructed by injecting a pair $(m, f \colon a \to m \bullet b)$ into the colimit.
+(By analogy with optics, I call this hom-set a monocle.) An element of the hom-set can be constructed by injecting a pair $(m, f \colon a \to m \bullet b)$ into the colimit.
 
 Composition: 
 \[ \circ \colon \cat O(b, c) \times \cat O(a, b) \to \cat O(a, c) \]
@@ -191,5 +191,6 @@ Conceptually, a fiber functor ``probes'' the environment around a fixed object.
 
 The advantage of this representation is that it replaces a somewhat messy composition of morphisms in $\cat O$ (the right hand-side) with simple composition of functions in $\Set$ (the left-hand side).
 
+This construction extends naturally to general optics, as shown by Pietro Vertechi.
 
 \end{document}
